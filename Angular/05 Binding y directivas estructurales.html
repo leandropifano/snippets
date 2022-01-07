@@ -1,0 +1,165 @@
+<!-- ------------------------------------------------------------------------------------------------------------------------ -->
+<!-- DIRECTIVAS ESTRUCTURALES: -->
+<!-- ------------------------------------------------------------------------------------------------------------------------ -->
+<!--ngFor-->
+<!-- Listar un elemento definido (me permite repetir una estructura)-->
+<ul>
+  <li *ngFor="let actual of propiedades" >
+    {{ actual.nombre }}
+  </li>
+</ul>
+
+<div *ngFor="let item of objPropiedades | keyvalue">
+    Clave: {{ item.key }} - Valor: {{ item.value }}
+</div>
+
+<!--ngFor sobre un Observable (ver Reactive RxJS)-->
+<ul>
+  <li *ngFor="let actual of nombre_servicio.nombre_observable | async" >
+    {{ actual.nombre }}
+  </li>
+</ul>
+
+<!--ngIf-->
+<!--El div solo se creara si existe el elemento "propiedades"-->
+<div *ngIf="propiedades"></div>
+
+<!--else (ng-template)-->
+<div *ngIf="condicion; else elseBlock">
+  Contenido en caso de TRUE
+</div>
+<ng-template #elseBlock>
+  Contenido en caso de FALSE
+</ng-template>
+
+<!--Definiendo cada bloque-->
+<div *ngIf="condicion; then thenBlock else elseBlock"></div>
+<ng-template #thenBlock>Contenido en caso de TRUE</ng-template>
+<ng-template #elseBlock>Contenido en caso de FALSE</ng-template>
+
+<!--Null case-->
+<div *ngIf="!myVar">
+  <p>Variable null</p>
+</div>
+
+<!--ngSwitch-->
+<div [ngSwitch]="expresion_a_evaluar">
+  <span *ngSwitchCase="uno">...</span>
+  <span *ngSwitchCase="dos">...</span>
+  <span *ngSwitchCase="tres">...</span>
+  <span *ngSwitchDefault></span>
+</div>
+<!-- ------------------------------------------------------------------------------------------------------------------------ -->
+
+
+<!-- ------------------------------------------------------------------------------------------------------------------------ -->
+<!-- PROPERTY BINDING: -->
+<!-- ------------------------------------------------------------------------------------------------------------------------ -->
+<!-- Asumiendo la existencia de una variable en algun componente: -->
+<!-- let imagen_URL = 'http://lorempixel.com/400/200'; -->
+<!-- ------------------------------------------------------------------------------------------------------------------------ -->
+<!--Puedo hacer un binding de propiedad solo con especificar src dentro de corchetes:-->
+<img [src]="imagen_URL" />
+<!-- ------------------------------------------------------------------------------------------------------------------------ -->
+
+
+<!-- ------------------------------------------------------------------------------------------------------------------------ -->
+<!-- CLASS BINDING & STYLE BINDING (CSS y Estilos): -->
+<!-- ------------------------------------------------------------------------------------------------------------------------ -->
+<!--Class binding: Se aplicará la clase solo en caso positivo (true)-->
+<div [class.mi_clase_css]="propiedades.nombre===Camilo">Special</div>
+
+<!--Style binding-->
+<button [style.color]="condicion ? 'red' : 'green'" />
+<!-- ------------------------------------------------------------------------------------------------------------------------ -->
+
+
+<!-- ------------------------------------------------------------------------------------------------------------------------ -->
+<!-- EVENT BINDING: -->
+<!-- ------------------------------------------------------------------------------------------------------------------------ -->
+<!--Event binding: Mapear evento click a una funcion del objeto principal-->
+<input type="button" value="Añadir" (click)="addUsuario(propiedades)" />
+<!--(click) o on-click -->
+
+<!--Event Filtering: Nos permite filtrar de forma facil un tipo de evento particular-->
+<input type="text" (keyup.enter)="addUsuario()" />
+
+<!--Template variable:-->
+<!--De esta forma podré pasar rápidamente el contenido de value a la funcion addUsuario-->
+<input type="text" (keyup.enter)="addUsuario(idNombre.value)" #idNombre />
+
+<!--$Event-->
+<!--Angular provee la posibilidad de pasar la variable de event que se ajustará al contexto del evento actual-->
+<button (click)="mostrar_contenido($event)"></button>
+
+<!-- Operador de navegación segura -->
+<!-- El operador ?. solo ejecutará nombre_funcion() si nombre_servicio.nombre_observable es distinto de nulo. -->
+<span>{{ nombre_servicio.nombre_observable?.nombre_funcion() }}</span>
+<!-- ------------------------------------------------------------------------------------------------------------------------ -->
+
+
+<!-- ------------------------------------------------------------------------------------------------------------------------ -->
+<!-- TWO WAY BINDING (ngModel - Envío bidireccional): -->
+<!-- ------------------------------------------------------------------------------------------------------------------------ -->
+<!--ngModel el envío bidireccional de información entre vista y componente. -->
+
+<!--Para poder utilizar ngModule es necesaria la importación manual de el módulo
+"@angular/forms" en el archivo "app.module.ts" -->
+
+<!--Property binding (ngModel)-->
+<input [(ngModel)]="propiedades.nombre" type="text" placeholder="Escriba el nombre..." />
+<label>Nombre: {{ propiedades.nombre }} </label>
+
+<!--Class binding (ngClass)-->
+<!--Nos permite agregar o quitar clases desde un componente -->
+<!-- let array_clases = ['clase_uno', 'clase_dos', clase_tres]; -->
+<button [ngClass]="array_clases">Guardar</button>
+<!-- ------------------------------------------------------------------------------------------------------------------------ -->
+
+
+<!-- ------------------------------------------------------------------------------------------------------------------------ -->
+<!-- ACLARACIÓN DE SINTAXIS: -->
+<!--
+  La sintaxis de enlace de [], (), [()] y el prefijo especifican la dirección del flujo de datos.
+
+  [] para enlazar desde la fuente a la vista.
+  () para enlazar de la vista a la fuente.
+  [()] para enlazar en una secuencia de vista bidireccional a la fuente para ver.
+-->
+<!-- ------------------------------------------------------------------------------------------------------------------------ -->
+
+
+<!-- ------------------------------------------------------------------------------------------------------------------------ -->
+<!-- TRASPASO DE INFORMACIÓN ENTRE DISTINTOS COMPONENTES: -->
+<!-- ------------------------------------------------------------------------------------------------------------------------ -->
+<app-nombre-componente [elemento_destino]="propiedades"></app-nombre-componente>
+
+<!--Dentro del componente de destino (clase)-->
+import { Component, Input } from '@angular/core';
+
+export class DestinoComponent implements OnInit{
+  <!--Recibir los datos enviados-->
+  @Input() elemento_destino;
+  ...
+}
+<!-- ------------------------------------------------------------------------------------------------------------------------ -->
+
+<!-- ------------------------------------------------------------------------------------------------------------------------ -->
+<!-- Event Emitter -->
+<!-- ------------------------------------------------------------------------------------------------------------------------ -->
+<!-- Con event emitter podemos crear eventos personalizados.
+<!-- ------------------------------------------------------------------------------------------------------------------------ -->
+<!--Dentro del componente de destino (clase)-->
+import { Component, Output, EventEmitter } from '@angular/core';
+
+export class DestinoComponent implements OnInit{
+  <!--Definir nuestro evento personalizado-->
+  @Output() nombre_evento = new EventEmitter<boolean>();
+  ...
+
+  <!-- Lanzar nuestro evento personalizado -->
+  this.nombre_evento.emit(true);
+}
+
+<app-nombre-componente (nombre_event)="console.log('Hola mundo');"></app-nombre-componente>
+<!-- ------------------------------------------------------------------------------------------------------------------------ -->
